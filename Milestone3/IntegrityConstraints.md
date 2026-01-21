@@ -51,7 +51,7 @@
 
 ---
 
-## 2) Value must be INTEGER (numeric types in the schema)
+## 2) Value must be INTEGER 
 
 ### SUBJECT
 - `SUBJECT_SEMESTER_LVL` (BIGINT)
@@ -81,7 +81,7 @@
 
 ---
 
-## Additional constraint-based business rules (from the schema)
+## Additional constraint-based business rules 
 
 ### SUBJECT
 - `SUBJECT_ELECTIVE` must be one of: `P`, `W`, `Z`
