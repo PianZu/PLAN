@@ -1,1 +1,95 @@
+Transaction 1: Assign academic staff to a course
 
+Action:
+The planner assigns an academic staff member (professor or lecturer) to a specific course for a given semester.
+
+Entities involved: ACADEMIC_STAFF, COURSE, COURSE_ASSIGNMENT
+
+Database operation:
+
+INSERT INTO SCHEMA_MAIN.COURSE_ASSIGNMENT
+(
+  SUBJECT_NR,
+  DEGREE_SHORT_NAME,
+  COURSE_ASSIGNMENT_TERM,
+  ACADEMIC_STAFF_ID,
+  TEACHING_HOURS
+)
+VALUES (?, ?, ?, ?, ?);
+
+Purpose:
+Tracks which academic staff member teaches which subject in which degree program and semester, including the assigned teaching hours.
+
+Transaction 2: Register workload reduction (Deputatsnachlass)
+
+Action:
+The planner registers a workload reduction for an academic staff member due to additional responsibilities.
+
+Entities involved: ACADEMIC_STAFF, ACADEMIC_STAFF_WORKLOAD
+
+Database operation:
+
+INSERT INTO SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD
+(
+  ACADEMIC_STAFF_ID,
+  SEMESTER_NR,
+  ACADEMIC_STAFF_REDUCTION,
+  ACADEMIC_STAFF_ROLE
+)
+VALUES (?, ?, ?, ?);
+
+Purpose:
+Ensures that the teaching workload is correctly reduced for a given semester based on additional duties or roles.
+
+Transaction 3: Generate workload report
+
+Action:
+The planner generates a report listing all taught subjects, teaching hours, workload reductions, and total workload for an academic staff member.
+
+Entities involved: ACADEMIC_STAFF, COURSE_ASSIGNMENT, ACADEMIC_STAFF_WORKLOAD, SUBJECT
+
+Database operation:
+
+SELECT
+  s.SUBJECT_NAME,
+  ca.COURSE_ASSIGNMENT_TERM,
+  ca.TEACHING_HOURS,
+  aw.ACADEMIC_STAFF_REDUCTION
+FROM SCHEMA_MAIN.COURSE_ASSIGNMENT ca
+JOIN SCHEMA_MAIN.SUBJECT s
+  ON ca.SUBJECT_NR = s.SUBJECT_NR
+LEFT JOIN SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD aw
+  ON ca.ACADEMIC_STAFF_ID = aw.ACADEMIC_STAFF_ID
+ AND ca.COURSE_ASSIGNMENT_TERM = aw.SEMESTER_NR
+WHERE ca.ACADEMIC_STAFF_ID = ?;
+
+Purpose:
+Provides workload and teaching reports for rectorate review or for planning future semesters.
+
+Transaction 4: View semester lecture plan
+
+Action:
+The planner views a list of all courses offered in a specific semester, grouped by degree program.
+
+Entities involved: COURSE, COURSE_ASSIGNMENT, SUBJECT, DEGREE_PROGRAM
+
+Database operation:
+
+SELECT
+  dp.DEGREE_SHORT_NAME,
+  s.SUBJECT_NAME,
+  ca.COURSE_ASSIGNMENT_TERM,
+  ca.ACADEMIC_STAFF_ID,
+  ca.TEACHING_HOURS
+FROM SCHEMA_MAIN.COURSE_ASSIGNMENT ca
+JOIN SCHEMA_MAIN.COURSE c
+  ON ca.SUBJECT_NR = c.SUBJECT_NR
+ AND ca.DEGREE_SHORT_NAME = c.DEGREE_SHORT_NAME
+JOIN SCHEMA_MAIN.SUBJECT s
+  ON c.SUBJECT_NR = s.SUBJECT_NR
+JOIN SCHEMA_MAIN.DEGREE_PROGRAM dp
+  ON c.DEGREE_SHORT_NAME = dp.DEGREE_SHORT_NAME
+WHERE ca.COURSE_ASSIGNMENT_TERM = ?;
+
+Purpose:
+Displays the complete lecture plan for a given semester and degree program to support scheduling and coordination.
