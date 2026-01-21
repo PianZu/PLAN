@@ -1,12 +1,19 @@
-Transaction 1: Assign academic staff to a course
+# Transactions (SCHEMA_MAIN)
 
-Action:
+---
+
+## Transaction 1: Assign academic staff to a course
+
+**Action:**  
 The planner assigns an academic staff member (professor or lecturer) to a specific course for a given semester.
 
-Entities involved: ACADEMIC_STAFF, COURSE, COURSE_ASSIGNMENT
+**Entities involved:**  
+- ACADEMIC_STAFF  
+- COURSE  
+- COURSE_ASSIGNMENT  
 
-Database operation:
-
+**Database operation:**
+```sql
 INSERT INTO SCHEMA_MAIN.COURSE_ASSIGNMENT
 (
   SUBJECT_NR,
@@ -16,19 +23,22 @@ INSERT INTO SCHEMA_MAIN.COURSE_ASSIGNMENT
   TEACHING_HOURS
 )
 VALUES (?, ?, ?, ?, ?);
-
-Purpose:
+```
+**Purpose:**
 Tracks which academic staff member teaches which subject in which degree program and semester, including the assigned teaching hours.
 
-Transaction 2: Register workload reduction (Deputatsnachlass)
 
-Action:
+## Transaction 2: Register workload reduction (Deputatsnachlass)
+
+**Action:**  
 The planner registers a workload reduction for an academic staff member due to additional responsibilities.
 
-Entities involved: ACADEMIC_STAFF, ACADEMIC_STAFF_WORKLOAD
+**Entities involved:**  
+- ACADEMIC_STAFF  
+- ACADEMIC_STAFF_WORKLOAD  
 
-Database operation:
-
+**Database operation:**
+```sql
 INSERT INTO SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD
 (
   ACADEMIC_STAFF_ID,
@@ -37,19 +47,23 @@ INSERT INTO SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD
   ACADEMIC_STAFF_ROLE
 )
 VALUES (?, ?, ?, ?);
-
-Purpose:
+```
+**Purpose:**
 Ensures that the teaching workload is correctly reduced for a given semester based on additional duties or roles.
 
-Transaction 3: Generate workload report
+## Transaction 3: Generate workload report
 
-Action:
+**Action:**  
 The planner generates a report listing all taught subjects, teaching hours, workload reductions, and total workload for an academic staff member.
 
-Entities involved: ACADEMIC_STAFF, COURSE_ASSIGNMENT, ACADEMIC_STAFF_WORKLOAD, SUBJECT
+**Entities involved:**  
+- ACADEMIC_STAFF  
+- ACADEMIC_STAFF_WORKLOAD
+- COURSE_ASSIGNMENT
+- SUBJECT
 
-Database operation:
-
+**Database operation:**
+```sql
 SELECT
   s.SUBJECT_NAME,
   ca.COURSE_ASSIGNMENT_TERM,
@@ -62,19 +76,23 @@ LEFT JOIN SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD aw
   ON ca.ACADEMIC_STAFF_ID = aw.ACADEMIC_STAFF_ID
  AND ca.COURSE_ASSIGNMENT_TERM = aw.SEMESTER_NR
 WHERE ca.ACADEMIC_STAFF_ID = ?;
-
-Purpose:
+```
+**Purpose:**
 Provides workload and teaching reports for rectorate review or for planning future semesters.
 
-Transaction 4: View semester lecture plan
+## Transaction 4: View semester lecture plan
 
-Action:
+**Action:**  
 The planner views a list of all courses offered in a specific semester, grouped by degree program.
 
-Entities involved: COURSE, COURSE_ASSIGNMENT, SUBJECT, DEGREE_PROGRAM
+**Entities involved:**  
+- COURSE
+- COURSE_ASSIGNMENT
+- SUBJECT
+- DEGREE_PROGRAM
 
-Database operation:
-
+**Database operation:**
+```sql
 SELECT
   dp.DEGREE_SHORT_NAME,
   s.SUBJECT_NAME,
@@ -90,25 +108,27 @@ JOIN SCHEMA_MAIN.SUBJECT s
 JOIN SCHEMA_MAIN.DEGREE_PROGRAM dp
   ON c.DEGREE_SHORT_NAME = dp.DEGREE_SHORT_NAME
 WHERE ca.COURSE_ASSIGNMENT_TERM = ?;
-
-Purpose:
+```
+**Purpose:**
 Displays the complete lecture plan for a given semester and degree program to support scheduling and coordination.
 
-Transaction 5: Update teaching hours
+## Transaction 5: Update teaching hours
 
-Action:
+**Action:**  
 The planner updates the teaching hours of an academic staff member for a specific course assignment due to a course split.
 
-Entities involved: COURSE_ASSIGNMENT
+**Entities involved:**  
+- COURSE_ASSIGNMENT
 
-Database operation:
 
+**Database operation:**
+```sql
 UPDATE SCHEMA_MAIN.COURSE_ASSIGNMENT
 SET TEACHING_HOURS = ?
 WHERE SUBJECT_NR = ?
   AND DEGREE_SHORT_NAME = ?
   AND COURSE_ASSIGNMENT_TERM = ?
   AND ACADEMIC_STAFF_ID = ?;
-
-Purpose:
+```
+**Purpose:**
 Ensures that the assigned teaching hours accurately reflect the actual workload after course restructuring.
