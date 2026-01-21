@@ -93,3 +93,22 @@ WHERE ca.COURSE_ASSIGNMENT_TERM = ?;
 
 Purpose:
 Displays the complete lecture plan for a given semester and degree program to support scheduling and coordination.
+
+Transaction 5: Update teaching hours
+
+Action:
+The planner updates the teaching hours of an academic staff member for a specific course assignment due to a course split.
+
+Entities involved: COURSE_ASSIGNMENT
+
+Database operation:
+
+UPDATE SCHEMA_MAIN.COURSE_ASSIGNMENT
+SET TEACHING_HOURS = ?
+WHERE SUBJECT_NR = ?
+  AND DEGREE_SHORT_NAME = ?
+  AND COURSE_ASSIGNMENT_TERM = ?
+  AND ACADEMIC_STAFF_ID = ?;
+
+Purpose:
+Ensures that the assigned teaching hours accurately reflect the actual workload after course restructuring.
