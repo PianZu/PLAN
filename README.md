@@ -9,7 +9,6 @@ Stellen Sie sicher, dass sich die folgenden Dateien im selben Ordner befinden:
 * **setup_plan.sh** – Das Haupt-Shell-Skript zur Automatisierung.
 * **create_staging.sql** – Erstellt die Tabellenstruktur im Schema `SCHEMA_MAIN`.
 * **02_load_from_excel_new_no_truncate.sql** – Lädt die Daten in die Tabellen.
-* **skripte.txt** – Enthält alle nötigen Skripte zur Ausfürhung von Milestone 4
 
 ## Installation & Ausführung
 
