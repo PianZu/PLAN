@@ -91,37 +91,90 @@ ALTER TABLE SCHEMA_MAIN.DEGREE_PROGRAM ADD FOREIGN KEY FK_DEGREE_PROGRAM_FACULTY
 
 ALTER TABLE SCHEMA_MAIN.LECTURER ADD FOREIGN KEY FK_ACADEMIC_STAFF ( ACADEMIC_STAFF_ID ) REFERENCES SCHEMA_MAIN.ACADEMIC_STAFF( ACADEMIC_STAFF_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
-COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_NR IS 'The number of the subject e.g 1051003';
+COMMENT ON TABLE SCHEMA_MAIN.FACULTY IS 'fullname of a faculty Informationstechnik';
 
-COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_SEMESTER_LVL IS 'The name of a subject. E.g. "Information Systems"';
+COMMENT ON COLUMN SCHEMA_MAIN.FACULTY.FACULTY_SHORT_NAME IS 'short name for a faculty e.g. IT';
+
+COMMENT ON COLUMN SCHEMA_MAIN.FACULTY.FACULTY_NAME IS 'fullname of a faculty Informationstechnik';
+
+
+
+COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_NR IS 'SPO code, e.g. ''1053007-SWB''';
+
+COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_SEMESTER_LVL IS 'Semester Number';
+
+COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.DEGREE_SHORT_NAME IS 'Degree Short Name e.g SWB';
+
+COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_NAME IS 'Module name e.g IT Security';
+
+COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_ELECTIVE IS 'Elective Type e.g (P/W/Z)';
+
+COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_CURRICULUM IS 'required volume';
+
+COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_SCHEDULE IS 'the actual planned volume';
+
+COMMENT ON COLUMN SCHEMA_MAIN.SUBJECT.SUBJECT_COMMENT IS 'comments for the subject';
+
+
 
 COMMENT ON TABLE SCHEMA_MAIN.ACADEMIC_STAFF IS 'Course teaching persons';
 
 COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.ACADEMIC_STAFF_ID IS 'An identifying number for the teacher.';
 
-COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.FIRST_NAME IS 'Name of the teacher.
-E.g. "Jürgen Nonnast"';
+COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.FIRST_NAME IS 'Name of the teacher. E.g. "Jürgen Nonnast"';
 
-COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.LAST_NAME IS 'Name of the teacher.
-E.g. "Jürgen Nonnast"';
+COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.LAST_NAME IS 'Name of the teacher. E.g. "Jürgen Nonnast"';
 
-COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.ACADEMIC_STAFF_COMMENT IS 'Optional instructor comments.';
+COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.ACADEMIC_STAFF_COMMENT IS 'comments from the academic staff';
 
-COMMENT ON TABLE SCHEMA_MAIN.LECTURER IS 'A non-permanent teaching staff member, standardized in this document under the designation ''lecturer''.';
+COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.FACULTY_SHORT_NAME IS 'which faculty he belongs to';
 
-COMMENT ON COLUMN SCHEMA_MAIN.LECTURER.ACADEMIC_STAFF_ID IS 'The unique identifier for the instructor, serving as a foreign key referencing the Teacher table.';
+COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF.IS_PROF IS 'if he or she is a prof';
 
-COMMENT ON COLUMN SCHEMA_MAIN.LECTURER.SUPERVISOR IS 'Is used to assign a directly supervising professor to a specific lecturer';
 
-COMMENT ON TABLE SCHEMA_MAIN.COURSE IS 'A class taught by a specific lecturer during a given semester, for instance, WS24/25.';
 
-COMMENT ON COLUMN SCHEMA_MAIN.COURSE.SUBJECT_NR IS 'The number of the subject e.g 1051003';
+COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD.SEMESTER_NR IS 'semester which the role start e.g. SS26';
 
-COMMENT ON COLUMN SCHEMA_MAIN.COURSE.DEGREE_SHORT_NAME IS 'A unique alphanumeric code identifying the specific degree program (e.g., ''SWB'').';
+COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD.ACADEMIC_STAFF_REDUCTION IS 'the workload he or she get credited for the role';
 
-COMMENT ON COLUMN SCHEMA_MAIN.COURSE.COURSE_COMMENT IS 'Optional remark about the course.';
+COMMENT ON COLUMN SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD.ACADEMIC_STAFF_ROLE IS 'the special role name';
 
-COMMENT ON COLUMN SCHEMA_MAIN.COURSE_ASSIGNMENT.COURSE_ASSIGNMENT_TERM IS 'The designated start semester for the course offering (e.g., ''WS24/25'')';
 
-COMMENT ON COLUMN SCHEMA_MAIN.COURSE_ASSIGNMENT.ACADEMIC_STAFF_ID IS 'An identifying number for the teacher.';
+
+COMMENT ON COLUMN SCHEMA_MAIN.DEGREE_PROGRAM.DEGREE_SHORT_NAME IS 'shortname of a degree e.g. SWB';
+
+COMMENT ON COLUMN SCHEMA_MAIN.DEGREE_PROGRAM.DEGREE_NAME IS 'fullname of a degree e.g. Softwaretechnik und Medieninformatik';
+
+COMMENT ON COLUMN SCHEMA_MAIN.DEGREE_PROGRAM.FACULTY_SHORT_NAME IS 'which faculty it belongs to e.g. IT';
+
+
+
+COMMENT ON TABLE SCHEMA_MAIN.LECTURER IS
+'A non-permanent teaching staff member, standardized in this document under the designation ''lecturer''.';
+
+COMMENT ON COLUMN SCHEMA_MAIN.LECTURER.ACADEMIC_STAFF_ID IS 'academic staff id of the lecturer';
+
+COMMENT ON COLUMN SCHEMA_MAIN.LECTURER.SUPERVISOR IS 'academic staff id of the supervisor of the lecturer';
+
+
+COMMENT ON TABLE SCHEMA_MAIN.COURSE IS
+'A class taught by a specific lecturer during a given semester, for instance, WS24/25.';
+
+COMMENT ON COLUMN SCHEMA_MAIN.COURSE.SUBJECT_NR IS 'FK from Subject';
+
+COMMENT ON COLUMN SCHEMA_MAIN.COURSE.DEGREE_SHORT_NAME IS 'shortname of a degree e.g. SWB';
+
+COMMENT ON COLUMN SCHEMA_MAIN.COURSE.COURSE_COMMENT IS 'comments for the course';
+
+
+COMMENT ON COLUMN SCHEMA_MAIN.COURSE_ASSIGNMENT.COURSE_ASSIGNMENT_TERM IS
+'The scheduled start term for the course offering (e.g. SS26)';
+
+COMMENT ON COLUMN SCHEMA_MAIN.COURSE_ASSIGNMENT.SUBJECT_NR IS 'subject number e.g. 1051001-SWB';
+
+COMMENT ON COLUMN SCHEMA_MAIN.COURSE_ASSIGNMENT.ACADEMIC_STAFF_ID IS 'the id of the teacher for the course';
+
+COMMENT ON COLUMN SCHEMA_MAIN.COURSE_ASSIGNMENT.TEACHING_HOURS IS 'the workload for the teacher';
+
+COMMENT ON COLUMN SCHEMA_MAIN.COURSE_ASSIGNMENT.DEGREE_SHORT_NAME IS 'short name for the degree e.g. SWB';
 
