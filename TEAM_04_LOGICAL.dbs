@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Lecture_planing_tool" database="LogicalDesign" id="c90e1439-d51f-4c66-9af7-70bd3e42c096" >
+	<comment><![CDATA[This tool is used to plan lectures and lecturers for the coming semester.
+Also the workload of the professors is tracked in this tool]]></comment>
+	<schema name="Schema_main" >
+		<table name="ACADEMIC STAFF" prior="teacher" >
+			<comment><![CDATA[Represents academic staff members involved in teaching and administration]]></comment>
+			<column name="ACADEMIC_STAFF_ID" prior="teacher_id" type="INT" mandatory="y" >
+				<comment><![CDATA[An identifying number for the teacher.]]></comment>
+			</column>
+			<column name="FIRST_NAME" prior="teacher_first_name" type="VARCHAR" length="50" mandatory="y" >
+				<comment><![CDATA[First name of the teacher e.g. "Jürgen"]]></comment>
+			</column>
+			<column name="LAST_NAME" prior="teacher_last_name" type="VARCHAR" length="50" mandatory="y" >
+				<comment><![CDATA[Last Name of the Teacher e.g. "Nonnast"]]></comment>
+			</column>
+			<column name="ACADEMIC_STAFF_COMMENT" prior="teacher_note" type="VARCHAR" length="255" >
+				<comment><![CDATA[Optional instructor comments.]]></comment>
+			</column>
+			<column name="FACULTY_SHORT_NAME" type="CHAR" length="3" mandatory="y" >
+				<comment><![CDATA[faculty to which the adademic staff member belongs]]></comment>
+			</column>
+			<column name="IS_PROF" type="BOOLEAN" mandatory="y" >
+				<comment><![CDATA[indicates whether the academic staff member is a professor]]></comment>
+			</column>
+			<index name="unq_teacher_id" unique="UNIQUE_KEY" virtual="y" >
+				<comment><![CDATA[Teaching Id has to be UNQ]]></comment>
+				<column name="ACADEMIC_STAFF_ID" />
+			</index>
+			<index name="pk_ACADEMIC STAFF" unique="PRIMARY_KEY" >
+				<column name="ACADEMIC_STAFF_ID" />
+			</index>
+			<fk name="fk_academic staff_faculty" to_schema="Schema_main" to_table="FACULTY" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="FACULTY_SHORT_NAME" pk="FACULTY_SHORT_NAME" />
+			</fk>
+		</table>
+		<table name="ACADEMIC_STAFF_WORKLOAD" prior="teacher_function" >
+			<comment><![CDATA[Represents the workload and workload reductions of academic staff per semester.]]></comment>
+			<column name="ACADEMIC_STAFF_ID" prior="function_start_semester" type="INT" mandatory="y" >
+				<comment><![CDATA[An identifying number for the teacher]]></comment>
+			</column>
+			<column name="SEMESTER_NR" prior="teacher_id" type="VARCHAR" length="8" mandatory="y" >
+				<comment><![CDATA[semester which the role start e.g. SS26]]></comment>
+			</column>
+			<column name="ACADEMIC_STAFF_REDUCTION" prior="function_name" type="DECIMAL" length="5" decimal="2" mandatory="y" >
+				<comment><![CDATA[the workload he or she get credited for the role]]></comment>
+			</column>
+			<column name="ACADEMIC_STAFF_ROLE" prior="reduction" type="CHAR" length="10" mandatory="y" >
+				<comment><![CDATA[the special role name]]></comment>
+			</column>
+			<index name="pk_ACADEMIC_STAFF_WORKLOAD" unique="PRIMARY_KEY" >
+				<column name="SEMESTER_NR" />
+				<column name="ACADEMIC_STAFF_ID" />
+			</index>
+			<constraint name="Cns_ACADEMIC_STAFF_REDUCTION" >
+				<string><![CDATA[ACADEMIC_STAFF_REDUCTION >= 0]]></string>
+			</constraint>
+			<fk name="fk_ACADEMIC_STAFF" to_schema="Schema_main" to_table="ACADEMIC STAFF" type="Identifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="ACADEMIC_STAFF_ID" pk="ACADEMIC_STAFF_ID" />
+			</fk>
+		</table>
+		<table name="COURSE" prior="course" >
+			<comment><![CDATA[Represents a course offered within a degree program]]></comment>
+			<column name="DEGREE_SHORT_NAME" prior="major_id" type="CHAR" length="3" mandatory="y" >
+				<comment><![CDATA[shortname of a degree e.g. SWB]]></comment>
+			</column>
+			<column name="COURSE_COMMENT" prior="course_note" type="VARCHAR" length="255" >
+				<comment><![CDATA[comments for the course]]></comment>
+			</column>
+			<column name="SUBJECT_NR" prior="subject_nr" type="VARCHAR" length="20" mandatory="y" >
+				<comment><![CDATA[FK from Subject]]></comment>
+			</column>
+			<index name="pk_COURSE" unique="PRIMARY_KEY" >
+				<column name="DEGREE_SHORT_NAME" />
+				<column name="SUBJECT_NR" />
+			</index>
+			<index name="unq_SUBJECT_NR" unique="UNIQUE_INDEX" >
+				<column name="SUBJECT_NR" />
+			</index>
+			<fk name="fk_DEGREE_PROGRAM" to_schema="Schema_main" to_table="DEGREE_PROGRAM" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="DEGREE_SHORT_NAME" pk="DEGREE_SHORT_NAME" />
+			</fk>
+			<fk name="fk_COURSE_SUBJECT" to_schema="Schema_main" to_table="SUBJECT" type="Identifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="SUBJECT_NR" pk="SUBJECT_NR" />
+			</fk>
+		</table>
+		<table name="COURSE_ASSIGNMENT" prior="course_teacher_assignment" >
+			<comment><![CDATA[Represents the assignment of academic staff to courses in a specific semester]]></comment>
+			<column name="COURSE_ASSIGNMENT_TERM" prior="course_start_semester" type="VARCHAR" length="10" mandatory="y" >
+				<comment><![CDATA[The scheduled start term for the course offering (e.g. SS26)]]></comment>
+			</column>
+			<column name="ACADEMIC_STAFF_ID" prior="teacher_id" type="INT" mandatory="y" >
+				<comment><![CDATA[the id of the teacher for the course]]></comment>
+			</column>
+			<column name="TEACHING_HOURS" type="INT" mandatory="y" >
+				<comment><![CDATA[the workload for the teacher]]></comment>
+			</column>
+			<column name="SUBJECT_NR" prior="subject_nr" type="VARCHAR" length="20" mandatory="y" >
+				<comment><![CDATA[The number of the subject e.g 1051003]]></comment>
+			</column>
+			<column name="DEGREE_SHORT_NAME" prior="major_id" type="CHAR" length="3" mandatory="y" >
+				<comment><![CDATA[short name for the degree e.g. SWB]]></comment>
+			</column>
+			<index name="pk" unique="PRIMARY_KEY" >
+				<column name="COURSE_ASSIGNMENT_TERM" />
+				<column name="ACADEMIC_STAFF_ID" />
+				<column name="SUBJECT_NR" />
+				<column name="DEGREE_SHORT_NAME" />
+			</index>
+			<constraint name="CNS_TEACHING_HOURS" >
+				<string><![CDATA[TEACHING_HOURS >= 0]]></string>
+			</constraint>
+			<constraint name="CNS_COURSE_ASSIGNMENT_TERM" >
+				<string><![CDATA[(COURSE_ASSIGNMENT_TERM LIKE 'WS%' OR COURSE_ASSIGNMENT_TERM LIKE 'SS%')]]></string>
+			</constraint>
+			<fk name="fk_ACADEMIC_STAFF" to_schema="Schema_main" to_table="ACADEMIC STAFF" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="ACADEMIC_STAFF_ID" pk="ACADEMIC_STAFF_ID" />
+			</fk>
+			<fk name="fk_COURSE_ASSIGNMENT_COURSE" to_schema="Schema_main" to_table="COURSE" type="Identifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="SUBJECT_NR" pk="SUBJECT_NR" />
+				<fk_column name="DEGREE_SHORT_NAME" pk="DEGREE_SHORT_NAME" />
+			</fk>
+		</table>
+		<table name="DEGREE_PROGRAM" prior="major" >
+			<comment><![CDATA[Represents an academic degree program offered by a faculty]]></comment>
+			<column name="DEGREE_SHORT_NAME" prior="major_id" type="CHAR" length="3" mandatory="y" >
+				<comment><![CDATA[shortname of a degree e.g. SWB]]></comment>
+			</column>
+			<column name="DEGREE_NAME" prior="department_id" type="VARCHAR" length="30" mandatory="y" >
+				<comment><![CDATA[fullname of a degree e.g. Softwaretechnik und Medieninformatik]]></comment>
+			</column>
+			<column name="FACULTY_SHORT_NAME" prior="major_name" type="CHAR" length="4" mandatory="y" >
+				<comment><![CDATA[which faculty it belongs to e.g. IT]]></comment>
+			</column>
+			<index name="unq_DEGREE_SHORT_NAME" unique="UNIQUE_INDEX" >
+				<column name="DEGREE_SHORT_NAME" />
+			</index>
+			<index name="pk_DEGREE_PROGRAM" unique="PRIMARY_KEY" >
+				<column name="DEGREE_SHORT_NAME" />
+			</index>
+			<fk name="fk_degree_program_faculty" to_schema="Schema_main" to_table="FACULTY" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="FACULTY_SHORT_NAME" pk="FACULTY_SHORT_NAME" />
+			</fk>
+		</table>
+		<table name="FACULTY" prior="FACU" >
+			<comment><![CDATA[Represents an academic faculty or department within the university.]]></comment>
+			<column name="FACULTY_SHORT_NAME" type="CHAR" length="4" mandatory="y" >
+				<comment><![CDATA[short name for a faculty e.g. IT]]></comment>
+			</column>
+			<column name="FACULTY_NAME" type="VARCHAR" length="30" mandatory="y" >
+				<comment><![CDATA[fullname of a faculty Informationstechnik]]></comment>
+			</column>
+			<index name="pk_FACULTY" unique="PRIMARY_KEY" >
+				<column name="FACULTY_SHORT_NAME" />
+			</index>
+		</table>
+		<table name="LECTURER" prior="lecturer" >
+			<comment><![CDATA[A non-permanent teaching staff member, standardized in this document under the designation 'lecturer'.]]></comment>
+			<column name="ACADEMIC_STAFF_ID" prior="teacher_id" type="INT" mandatory="y" >
+				<comment><![CDATA[academic staff id of the lecturer]]></comment>
+			</column>
+			<column name="SUPERVISOR" prior="supervisor_professor" type="INT" >
+				<comment><![CDATA[academic staff id of the supervisor of the lecturer]]></comment>
+			</column>
+			<index name="pk_lecturer" unique="PRIMARY_KEY" virtual="y" >
+				<comment><![CDATA[This attribute acts as the primary key while maintaining a foreign key reference to the parent Teacher table]]></comment>
+				<column name="ACADEMIC_STAFF_ID" />
+			</index>
+			<index name="unq_supervisor_professor" unique="UNIQUE_INDEX" >
+				<column name="SUPERVISOR" />
+			</index>
+			<fk name="fk_ACADEMIC_STAFF" to_schema="Schema_main" to_table="ACADEMIC STAFF" type="Identifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="ACADEMIC_STAFF_ID" pk="ACADEMIC_STAFF_ID" />
+			</fk>
+		</table>
+		<table name="SUBJECT" prior="subject" >
+			<comment><![CDATA[“Represents a course subject offered within a degree program.]]></comment>
+			<column name="SUBJECT_NR" prior="subject_nr" type="VARCHAR" length="20" mandatory="y" >
+				<comment><![CDATA[SPO code, e.g. ''1053007-SWB"]]></comment>
+			</column>
+			<column name="SUBJECT_SEMESTER_LVL" prior="subject_name" type="INT" mandatory="y" >
+				<comment><![CDATA[Semester Number]]></comment>
+			</column>
+			<column name="DEGREE_SHORT_NAME" prior="subject_note" type="CHAR" length="3" mandatory="y" >
+				<comment><![CDATA[Degree Short Name e.g SWB]]></comment>
+			</column>
+			<column name="SUBJECT_NAME" prior="elective" type="VARCHAR" length="30" mandatory="y" >
+				<comment><![CDATA[Module name e.g IT Security]]></comment>
+			</column>
+			<column name="SUBJECT_ELECTIVE" prior="num_curr" type="CHAR" length="1" mandatory="y" >
+				<comment><![CDATA[Elective Type e.g (P/W/Z)]]></comment>
+			</column>
+			<column name="SUBJECT_CURRICULUM" prior="num_schd" type="INT" mandatory="y" >
+				<comment><![CDATA[required volume]]></comment>
+			</column>
+			<column name="SUBJECT_SCHEDULE" type="INT" mandatory="y" >
+				<comment><![CDATA[the actual planned volume]]></comment>
+			</column>
+			<column name="SUBJECT_COMMENT" type="VARCHAR" length="255" >
+				<comment><![CDATA[comments for the subject]]></comment>
+			</column>
+			<index name="SUBJECT_NR" unique="PRIMARY_KEY" virtual="y" >
+				<column name="SUBJECT_NR" />
+			</index>
+			<constraint name="Cns_SUBJECT_ELECTIVE" >
+				<string><![CDATA[SUBJECT_ELECTIVE IN ('P', 'W', 'Z')]]></string>
+			</constraint>
+			<constraint name="Cns_SUBJECT_CURRICULUM_AND_SCHEDULE" >
+				<string><![CDATA[SUBJECT_CURRICULUM >= 0 AND SUBJECT_SCHEDULE >= 0]]></string>
+			</constraint>
+		</table>
+		<table name="V_COURSE_PLANNER" prior="V_COURSE_PLANNE" virtual="y" >
+			<column name="TERM" type="CHAR" length="10" />
+			<column name="DEGREE_SHORT_NAME" type="CHAR" length="10" />
+			<column name="SUBJECT_NR" type="CHAR" length="10" />
+			<column name="SUBJECT_NAME" type="CHAR" length="100" />
+			<column name="ACADEMIC_STAFF_ID" type="CHAR" length="10" />
+			<column name="TEACHING_HOURS" type="INT" />
+		</table>
+		<table name="V_DEPUTATSNACHLASS_WORKLOAD" prior="V_DEPUTATSNACHLASS_WORKL" >
+			<column name="SEMESTER_NR" type="INT" />
+			<column name="ACADEMIC_STAFF_ID" type="INT" />
+			<column name="REDUCTION_HOURS" type="INT" />
+		</table>
+		<table name="V_TIMETABLE_OFFERINGS_EXPORT" prior="V_TIMETABLE_OFFERINGS_EX" virtual="y" >
+			<column name="TERM" type="CHAR" length="10" />
+			<column name="DEGREE_SHORT_NAME" type="CHAR" length="5" />
+			<column name="SUBJECT_NAME" type="CHAR" length="10" />
+			<column name="SEMESTER_LVL" type="INT" />
+			<column name="TEACHING_HOURS" type="INT" />
+		</table>
+	</schema>
+	<layout name="Course_Planning" id="c4ae22e1-970a-4de6-bc06-a25eb71c4f1b" confirmed="y" show_relation="columns" >
+		<entity schema="Schema_main" name="COURSE" color="3986C1" x="418" y="380" />
+		<entity schema="Schema_main" name="ACADEMIC STAFF" color="3986C1" x="57" y="380" />
+		<entity schema="Schema_main" name="SUBJECT" color="3986C1" x="95" y="57" />
+		<entity schema="Schema_main" name="COURSE_ASSIGNMENT" color="3986C1" x="418" y="57" />
+	</layout>
+	<layout name="Lecture_Planning" id="6b08857d-82a6-4b91-834c-5f1231dcc0d7" confirmed="y" show_relation="columns" >
+		<entity schema="Schema_main" name="ACADEMIC STAFF" color="3986C1" x="1064" y="532" />
+		<entity schema="Schema_main" name="ACADEMIC_STAFF_WORKLOAD" color="3986C1" x="380" y="285" />
+		<entity schema="Schema_main" name="COURSE" color="3986C1" x="57" y="57" />
+		<entity schema="Schema_main" name="COURSE_ASSIGNMENT" color="3986C1" x="380" y="532" />
+		<entity schema="Schema_main" name="DEGREE_PROGRAM" color="3986C1" x="57" y="532" />
+		<entity schema="Schema_main" name="FACULTY" color="3986C1" x="57" y="323" />
+		<entity schema="Schema_main" name="LECTURER" color="3986C1" x="741" y="285" />
+		<entity schema="Schema_main" name="SUBJECT" color="3986C1" x="741" y="532" />
+	</layout>
+	<layout name="Timetable_Export" id="8922f3ba-a43f-4e60-9715-18c95ace26aa" confirmed="y" show_relation="columns" >
+		<entity schema="Schema_main" name="COURSE" color="3986C1" x="380" y="380" />
+		<entity schema="Schema_main" name="SUBJECT" color="3986C1" x="57" y="57" />
+		<entity schema="Schema_main" name="DEGREE_PROGRAM" color="3986C1" x="380" y="57" />
+	</layout>
+	<layout name="Workload_Management" id="b64291e3-ecf2-4f58-8960-4e6dd0c1ba5b" confirmed="y" show_relation="columns" >
+		<entity schema="Schema_main" name="ACADEMIC STAFF" color="3986C1" x="418" y="57" />
+		<entity schema="Schema_main" name="ACADEMIC_STAFF_WORKLOAD" color="3986C1" x="57" y="57" />
+		<entity schema="Schema_main" name="V_COURSE_PLANNER" color="C1D8EE" x="988" y="456" />
+		<entity schema="Schema_main" name="V_TIMETABLE_OFFERINGS_EXPORT" color="C1D8EE" x="1178" y="456" />
+		<entity schema="Schema_main" name="V_DEPUTATSNACHLASS_WORKLOAD" color="C1D8EE" x="1387" y="456" />
+	</layout>
+</project>
