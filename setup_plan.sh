@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # Usage:
-#   ./setup_plan.sh /path/to/create_staging_fixed.sql /path/to/02_load_from_excel_new_no_truncate.sql
+#   ./setup_plan.sh /path/to/create_staging_fixed.sql /path/to/02_load_from_excel.sql
 #
 # Example:
-#   ./setup_plan.sh create_staging_fixed.sql 02_load_from_excel_new_no_truncate.sql
+#   ./setup_plan.sh create_staging_fixed.sql 02_load_from_excel.sql
 
 if [[ $# -ne 2 ]]; then
   echo "Usage: $0 <create_sql> <load_sql>"
@@ -42,6 +42,19 @@ db2 -tvf "$CREATE_SQL"
 
 echo "==> Running load script: ${LOAD_SQL}"
 db2 -tvf "$LOAD_SQL"
+
+echo "======================================"
+echo "Creating views from create_views.sql"
+echo "======================================"
+
+db2 -tvf create_views.sql
+
+if [ $? -ne 0 ]; then
+  echo "ERROR: Creating views failed"
+  exit 1
+fi
+
+echo "Views created successfully"
 
 echo "==> Verifying row counts"
 db2 -x "SELECT COUNT(*) AS COURSE_ASSIGNMENT_ROWS FROM SCHEMA_MAIN.COURSE_ASSIGNMENT"
