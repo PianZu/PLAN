@@ -29,7 +29,7 @@ chmod +x setup_plan.sh
 ### 3. Setup starten
 
 ```bash
-./setup_plan.sh create_staging.sql 02_load_from_excel_new_no_truncate.sql
+./setup_plan.sh create_staging.sql 02_load_from_excel.sql
 ```
 
 
