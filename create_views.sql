@@ -49,42 +49,7 @@ LEFT JOIN SCHEMA_MAIN.LECTURER l
   ON l.ACADEMIC_STAFF_ID = st.ACADEMIC_STAFF_ID
 ;
 
---------------------------------------------------------------------------------
--- 2) Central timetable planning view
---    "Receives course offerings" + Export-View für erforderliche Daten
---    (Fokus: Kursangebot pro Term + minimaler Export-Datensatz)
---------------------------------------------------------------------------------
-CREATE OR REPLACE VIEW SCHEMA_MAIN.V_TIMETABLE_OFFERINGS_EXPORT
-AS
-SELECT
-    ca.COURSE_ASSIGNMENT_TERM                       AS TERM,
-    c.DEGREE_SHORT_NAME                             AS DEGREE_SHORT_NAME,
-    dp.DEGREE_NAME                                  AS DEGREE_NAME,
-    dp.FACULTY_SHORT_NAME                           AS DEGREE_FACULTY_SHORT_NAME,
-    f2.FACULTY_NAME                                 AS DEGREE_FACULTY_NAME,
-    s.SUBJECT_NR                                    AS SUBJECT_NR,
-    s.SUBJECT_NAME                                  AS SUBJECT_NAME,
-    s.SUBJECT_SEMESTER_LVL                          AS SEMESTER_LVL,
-    s.SUBJECT_ELECTIVE                              AS ELECTIVE_FLAG,
-    s.SUBJECT_SCHEDULE                              AS SCHEDULE_HOURS,
-    ca.ACADEMIC_STAFF_ID                            AS ACADEMIC_STAFF_ID,
-    st.FIRST_NAME                                   AS STAFF_FIRST_NAME,
-    st.LAST_NAME                                    AS STAFF_LAST_NAME,
-    st.IS_PROF                                      AS IS_PROF,
-    ca.TEACHING_HOURS                               AS TEACHING_HOURS
-FROM SCHEMA_MAIN.COURSE_ASSIGNMENT ca
-JOIN SCHEMA_MAIN.COURSE c
-  ON c.SUBJECT_NR = ca.SUBJECT_NR
- AND c.DEGREE_SHORT_NAME = ca.DEGREE_SHORT_NAME
-JOIN SCHEMA_MAIN.SUBJECT s
-  ON s.SUBJECT_NR = c.SUBJECT_NR
-JOIN SCHEMA_MAIN.ACADEMIC_STAFF st
-  ON st.ACADEMIC_STAFF_ID = ca.ACADEMIC_STAFF_ID
-LEFT JOIN SCHEMA_MAIN.DEGREE_PROGRAM dp
-  ON dp.DEGREE_SHORT_NAME = c.DEGREE_SHORT_NAME
-LEFT JOIN SCHEMA_MAIN.FACULTY f2
-  ON f2.FACULTY_SHORT_NAME = dp.FACULTY_SHORT_NAME
-;
+
 
 --------------------------------------------------------------------------------
 -- 3) Deputatsnachlass view
@@ -124,7 +89,6 @@ CREATE ROLE ROLE_DEPUTATSNACHLASS;
 
 -- Read/Export: SELECT auf Views
 GRANT SELECT ON SCHEMA_MAIN.V_COURSE_PLANNER               TO ROLE ROLE_COURSE_PLANNER;
-GRANT SELECT ON SCHEMA_MAIN.V_TIMETABLE_OFFERINGS_EXPORT   TO ROLE ROLE_CENTRAL_TIMETABLE;
 GRANT SELECT ON SCHEMA_MAIN.V_DEPUTATSNACHLASS_WORKLOAD    TO ROLE ROLE_DEPUTATSNACHLASS;
 
 -- Write (Planung): Basistabellen (typischer Umfang)
@@ -139,4 +103,3 @@ GRANT SELECT ON SCHEMA_MAIN.SUBJECT          TO ROLE ROLE_CENTRAL_TIMETABLE;
 
 -- Deputatsnachlass: Read/Write auf Workload je nach Use-Case
 GRANT SELECT ON SCHEMA_MAIN.ACADEMIC_STAFF_WORKLOAD TO ROLE ROLE_DEPUTATSNACHLASS;
-
