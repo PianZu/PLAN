@@ -32,4 +32,8 @@ chmod +x setup_plan.sh
 ./setup_plan.sh create_staging.sql 02_load_from_excel.sql
 ```
 
+### Bemerkungen
+
+Unsere DBSchema hatte bei deim Erstellen der SQL Befehle nach dem physical model Probleme.
+
 
