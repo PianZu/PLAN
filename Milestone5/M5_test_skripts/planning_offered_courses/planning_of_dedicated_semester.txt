@@ -1,7 +1,0 @@
--- Planning of a dedicated semester, e.g. SWB6
--- (SWB6 exists; e.g. subject 1056001-SWB is level 6)
-SELECT *
-FROM SCHEMA_MAIN.VW_PLANNING_BASE
-WHERE DEGREE_SHORT_NAME = 'SWB'
-  AND SUBJECT_SEMESTER_LVL = 6
-ORDER BY SUBJECT_NR;
